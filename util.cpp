@@ -16,6 +16,10 @@
 #include <sha256.h>
 #include <opcodes.h>
 
+#include <string>
+#include <iostream>
+using namespace std;
+
 const uint8_t hexDigits[] = "0123456789abcdef";
 const uint8_t b58Digits[] = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
@@ -539,6 +543,11 @@ uint8_t fromB58Digit(
 
 static int getCoinType() {
     return
+
+        #if defined(NEBLIO)
+            53
+        #endif
+
         #if defined(PROTOSHARES)
             56
         #endif
@@ -1024,6 +1033,10 @@ const char *getInterestingAddr() {
 
         "udicetdXSo6Zc7vhWgAZfz4XrwagAX34RK"
 
+    #elif defined(NEBLIO)
+
+        "NXsZ1sAz2uHGxYK2rpXRhNfDnHa1NxRy1r"
+
     #else
 
         fatal("no address specified")
@@ -1065,7 +1078,7 @@ const char *getInterestingAddr() {
 
 #endif
 
-#if defined(CLAM) || defined(JUMBUCKS)
+#if defined(CLAM) || defined(JUMBUCKS) || defined(NEBLIO)
 
     #include <scrypt/scrypt.h>
 
