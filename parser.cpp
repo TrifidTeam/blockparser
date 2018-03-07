@@ -13,6 +13,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <string>
+#include <iostream>
+using namespace std;
+
 #if !defined(S_ISDIR)
     #define S_ISDIR(mode) (S_IFDIR==((mode) & S_IFMT))
 #endif
@@ -71,10 +75,16 @@ static double getMem() {
     #endif
 }
 
+#if defined NEBLIO //Added
+    static const size_t gHeaderSize = 80;
+    static auto kCoinDirName = ".neblio";
+    static const uint32_t gExpectedMagic = 0x866F5E32;
+#endif
+
 #if defined BITCOIN
     static const size_t gHeaderSize = 80;
     static auto kCoinDirName = ".bitcoin";
-    static const uint32_t gExpectedMagic = 0xd9b4bef9;
+    static const uint32_t gExpectedMagic = 0xD9B4BEF9;
 #endif
 
 #if defined TESTNET3
@@ -405,7 +415,7 @@ static void parseTX(
             SKIP(uint32_t, nVersion, p);
         #endif
 
-        #if defined(PEERCOIN) || defined(CLAM) || defined(JUMBUCKS) || defined(PAYCON)
+        #if defined(PEERCOIN) || defined(CLAM) || defined(JUMBUCKS) || defined(PAYCON) || defined(NEBLIO)
             SKIP(uint32_t, nTime, p);
         #endif
 
@@ -474,7 +484,7 @@ static bool parseBlock(
                 }
             endTXs(p);
 
-            #if defined(PEERCOIN) || defined(CLAM) || defined(JUMBUCKS) || defined(PAYCON)
+            #if defined(PEERCOIN) || defined(CLAM) || defined(JUMBUCKS) || defined(PAYCON) || defined(NEBLIO)
                 LOAD_VARINT(vchBlockSigSize, p);
                 p += vchBlockSigSize;
             #endif
@@ -712,6 +722,8 @@ static void getBlockHeader(
 
     LOAD(uint32_t, magic, p);
     if(unlikely(gExpectedMagic!=magic)) {
+        cout << gExpectedMagic << ": gExpectedMagic" << endl;
+        cout << magic << ": magic" << endl;
         hash = 0;
         return;
     }
@@ -734,11 +746,12 @@ static void getBlockHeader(
         } else {
             scrypt(hash, p, gHeaderSize);
         }
-    #elif defined(JUMBUCKS)
+    #elif defined(JUMBUCKS) || defined(NEBLIO)
         scrypt(hash, p, gHeaderSize);
     #else
         sha256Twice(hash, p, gHeaderSize);
     #endif
+
 
     auto i = gBlockMap.find(p + 4);
     if(likely(gBlockMap.end()!=i)) {
@@ -761,7 +774,6 @@ static void buildBlockHeaders() {
     const auto oneMeg = 1024 * 1024;
 
     for(const auto &blockFile : blockFiles) {
-
         startBlockFile(0);
 
         while(1) {
@@ -865,7 +877,7 @@ static void initHashtables() {
         gTXOMap.resize(nbTxEstimate);
     }
 
-    auto kAvgBytesPerBlock = 140000;
+    auto kAvgBytesPerBlock = 750;//CHANGED FOR NEBLIO
     auto nbBlockEstimate = (size_t)(1.1 * (gChainSize / kAvgBytesPerBlock));
     gBlockMap.resize(nbBlockEstimate);
 
@@ -942,15 +954,15 @@ static void findBlockFiles() {
     gChainSize = 0;
 
     auto blockChainDir = getBlockchainDir();
-    auto blockDir = blockChainDir + std::string("/blocks");
+    auto blockDir = blockChainDir;// COMMENTED OUT + std::string("/blocks");
     info("loading block chain from directory: %s", blockChainDir.c_str());
 
     struct stat statBuf;
     auto r = stat(blockDir.c_str(), &statBuf);
-    auto oldStyle = (r<0 || !S_ISDIR(statBuf.st_mode));
+    //Don't need this anymore  auto oldStyle = (r<0 || !S_ISDIR(statBuf.st_mode));
 
-    int blkDatId = (oldStyle ? 1 : 0);
-    auto fmt = oldStyle ? "/blk%04d.dat" : "/blocks/blk%05d.dat";
+    int blkDatId = 1;// CHANGED (oldStyle ? 1 : 0);
+    auto fmt = "/blk%04d.dat"; // CHANGED oldStyle ? "/blk%04d.dat" : "/blocks/blk%05d.dat";
     while(1) {
 
         char buf[64];

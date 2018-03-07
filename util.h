@@ -364,7 +364,7 @@
         );
     #endif
 
-    #if defined(CLAM) || defined(JUMBUCKS)
+    #if defined(CLAM) || defined(JUMBUCKS) || defined(NEBLIO)
         void scrypt(
                   uint8_t *h9r,
             const uint8_t *buf,
@@ -400,7 +400,7 @@
         uint64_t satoshis
     ) {
         return satoshis*
-            #if defined(PEERCOIN)
+            #if defined(PEERCOIN) || defined(NEBLIO)
                 1e-6
             #else
                 1e-8
