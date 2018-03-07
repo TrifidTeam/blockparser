@@ -400,7 +400,7 @@
         uint64_t satoshis
     ) {
         return satoshis*
-            #if defined(PEERCOIN) || defined(NEBLIO)
+            #if defined(PEERCOIN)
                 1e-6
             #else
                 1e-8
