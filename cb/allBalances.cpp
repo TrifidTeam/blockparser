@@ -103,7 +103,7 @@ struct AllBalances:public Callback {
             .add_option("-w", "--withAddr")
             .action("store")
             .type("int")
-            .set_default(500)
+            .set_default(99999999) //Was originally 500
             .help("only show address for top N results (default: N=%default)")
         ;
         parser
