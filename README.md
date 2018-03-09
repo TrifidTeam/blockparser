@@ -3,8 +3,14 @@ blockparser
 
     Message from the Trifid Team
     ----------------------------    
-    The Trifid Team has updated znort987's blockparser to work with Neblio. It works for NEBL and not NTP1 tokens.
-    We hope that more teams will be able to use this block parser to figure out creative ways to distribute NTP1 tokens to NEBL addresses in the future, and welcome any requests for updates.
+    The Trifid Team has updated znort987's blockparser to work with Neblio.
+    It works for NEBL and not NTP1 tokens.
+    We hope that more teams will be able to use this parser to figure out
+    creative ways to distribute NTP1 tokens to NEBL addresses in the future, 
+    and welcome any requests for updates.
+    
+    If this update has been helpful please donate NEBL and/or NTP1 tokens to our Dev Team Wallet:
+        NMi41ze2XnxJrMNGtSGheGqLR3h4dabREW
     
     Who wrote it ?
     --------------
